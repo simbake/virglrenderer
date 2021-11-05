@@ -64,7 +64,6 @@ virglrenderer_sources = [
 ]
 
 
-#   'vrend_winsys_egl.c',
 vrend_winsys_egl_sources = [
    'vrend_winsys_gbm.c',
    'vrend_winsys_gbm.h',
