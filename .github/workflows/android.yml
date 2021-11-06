@@ -24,6 +24,7 @@ jobs:
         run: |
           sudo pip3 install meson ninja
           mkdir -p /tmp/build/lib/pkgconfig
+          cp libdrm.pc /tmp/build/lib/pkgconfig/
 
       - name: Build libepoxy
         run: |
