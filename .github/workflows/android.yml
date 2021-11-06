@@ -46,7 +46,7 @@ jobs:
           cp "build-android-${{matrix.arch}}/vtest/libvirgl_test_server.so" /tmp/build/lib/
 
       - name: Change suffix
-        run:
+        run: |
           cd /tmp/build/lib
           rm libepoxy.so libepoxy.so.0 libvirglrenderer.so libvirglrenderer.so.1
           mv libepoxy.so.0.* libepoxy_0.so
