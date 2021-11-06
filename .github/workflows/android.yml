@@ -1,0 +1,49 @@
+name: Build for Android
+
+on:
+  [push, pull_request]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [ "arm32", "aarch64", "x86_64" ]
+      fail-fast: false
+
+    name: "Build ${{matrix.arch}}"
+
+    runs-on: ubuntu-20.04
+    env:
+      ANDROID_NDK_HOME: "${ANDROID_SDK_ROOT}/ndk-bundle"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        run: |
+          sudo pip3 install meson ninja
+
+      - name: Build libepoxy
+        run: |
+          git clone --depth 1 https://github.com/anholt/libepoxy.git
+          cd libepoxy
+          meson "build-android-${{matrix.arch}}" \
+            --prefix=/tmp/build \
+            --cross-file "../android-${{matrix.arch}}" \
+            -Degl=yes -Dglx=no -Dx11=false
+          ninja -C "build-android-${{matrix.arch}}" install
+
+      - name: Build virglrenderer
+        run: |
+          meson "build-android-${{matrix.arch}}" \
+            --prefix=/tmp/build \
+            --cross-file "android-${{matrix.arch}}" \
+            -Dplatforms=egl
+          ninja -C "build-android-${{matrix.arch}}" install
+          # cp "build-android-${{matrix.arch}}/libvirglrenderer.so.1.*" /tmp/build/libvirglrenderer.so.1
+      - name: Upload libraries
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_${{matrix.arch}}
+          path: /tmp/build
