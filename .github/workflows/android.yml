@@ -48,7 +48,6 @@ jobs:
       - name: Change suffix
         run:
           cd /tmp/build/lib
-          # remove symlinks
           rm libepoxy.so libepoxy.so.0 libvirglrenderer.so libvirglrenderer.so.1
           mv libepoxy.so.0.* libepoxy_0.so
           mv libvirglrenderer.so.1.* libvirglrenderer_1.so
