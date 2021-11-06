@@ -43,7 +43,7 @@ jobs:
             --cross-file "android-${{matrix.arch}}" \
             -Dplatforms=egl
           ninja -C "build-android-${{matrix.arch}}" install
-          # cp "build-android-${{matrix.arch}}/libvirglrenderer.so.1.*" /tmp/build/libvirglrenderer.so.1
+          cp "build-android-${{matrix.arch}}/vtest/libvirgl_test_server.so" /tmp/build/lib/
       - name: Upload libraries
         uses: actions/upload-artifact@v2
         with:
