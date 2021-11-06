@@ -16,8 +16,11 @@ jobs:
       - name: Setup
         run: |
           brew install meson pkg-config
-          mkdir -p /tmp/build/lib/pkgconfig
+          mkdir -p /tmp/build/{include/{EGL,KHR},lib/pkgconfig}
           cp libdrm.pc /tmp/build/lib/pkgconfig/
+          cd /tmp/build/include
+          wget https://github.com/khanhduytran0/libepoxy/raw/master/include/EGL/eglplatform.h -P EGL
+          wget https://github.com/khanhduytran0/libepoxy/raw/master/include/KHR/eglplatform.h -P KHR
       - name: Build libepoxy
         run: |
           git clone --depth 1 https://github.com/khanhduytran0/libepoxy.git
