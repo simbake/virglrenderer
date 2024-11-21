@@ -3,12 +3,11 @@ name: Build for Android
 on:
   [push, pull_request]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build:
     strategy:
       matrix:
-        arch: [ "arm32", "aarch64", "x86_64" ]
+        arch: ["arm32", "aarch64", "x86_64"]
       fail-fast: false
 
     name: "Build ${{matrix.arch}}"
@@ -53,8 +52,9 @@ jobs:
           mv libvirglrenderer.so.1.* libvirglrenderer_1.so
           perl -pi -e 's/libepoxy.so.0/libepoxy_0.so/g' *.so
           perl -pi -e 's/libvirglrenderer.so.1/libvirglrenderer_1.so/g' *.so ../bin/*
+
       - name: Upload libraries
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build_${{matrix.arch}}
           path: /tmp/build
