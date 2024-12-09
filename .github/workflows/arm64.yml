@@ -6,18 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: arm64v8/ubuntu:22.04
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
     - name: Install dependencies
       run: |
-        sudo apt-get clean
-        sudo dpkg --add-architecture arm64
-        sudo apt-get clean
         sudo apt-get update
         wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
         sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
@@ -26,20 +21,20 @@ jobs:
           build-essential \
           meson \
           ninja-build \
-          libegl1-mesa-dev:arm64 \
-          libgbm-dev:arm64 \
-          libdrm-dev:arm64 \
-          x11proto-gl-dev:arm64 \
-          libwayland-dev:arm64 \
+          libegl1-mesa-dev \
+          libgbm-dev \
+          libdrm-dev \
+          x11proto-gl-dev \
+          libwayland-dev \
           wayland-protocols \
           pkg-config \
           python3-pip \
-          vulkan*:arm64 \
-          libepoxy-dev:arm64 \
+          vulkan* \
+          libepoxy-dev \
           python3-setuptools \
-          libepoxy-dev:arm64 \
-          gcc-aarch64-linux-gnu \
-          g++-aarch64-linux-gnu
+          libepoxy-dev \
+          gcc-amd64-linux-gnu \
+          g++-amd64-linux-gnu
         pip3 install mako
 
     - name: Create build directory
