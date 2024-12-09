@@ -1,4 +1,4 @@
-name: Build Virglrenderer
+name: Build and Upload Virglrenderer
 
 on:
   workflow_dispatch: # Allows the workflow to be triggered manually
@@ -44,6 +44,16 @@ jobs:
     - name: Test the build
       run: ninja -C build test
 
-    - name: Install the build
+    - name: Package build artifacts
       run: |
-        sudo ninja -C build install
+        mkdir -p output
+        cp build/src/*.so output/ # Adjust the path based on the compiled files
+        cp build/src/*.a output/  # Include any static libraries, if applicable
+        cp build/* output/        # Optionally include everything from the build folder
+      # Ensures output folder is ready for upload
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: virglrenderer-build
+        path: output/
