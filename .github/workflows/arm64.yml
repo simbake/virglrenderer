@@ -11,11 +11,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Add alternative mirrors for arm64
-      run: |
-        sudo sed -i 's|http://security.ubuntu.com|http://ports.ubuntu.com|g' /etc/apt/sources.list
-        sudo sed -i 's|http://archive.ubuntu.com|http://ports.ubuntu.com|g' /etc/apt/sources.list
-
     - name: Install dependencies
       run: |
         sudo dpkg --add-architecture arm64
