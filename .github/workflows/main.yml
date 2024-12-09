@@ -27,6 +27,7 @@ jobs:
           pkg-config \
           python3-pip \
           libepoxy-dev \
+          vulkan* \
           python3-setuptools
         pip3 install mako
 
