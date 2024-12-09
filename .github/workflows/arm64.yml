@@ -1,0 +1,93 @@
+name: Build and Package Virglrenderer
+
+on:
+  workflow_dispatch: # Allows the workflow to be triggered manually
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo dpkg --add-architecture arm64
+        wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-jammy.list http://packages.lunarg.com/vulkan/lunarg-vulkan-jammy.list
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          meson \
+          ninja-build \
+          libegl1-mesa-dev:arm64 \
+          libgbm-dev:arm64 \
+          libdrm-dev:arm64 \
+          x11proto-gl-dev:arm64 \
+          libwayland-dev:arm64 \
+          wayland-protocols \
+          pkg-config \
+          python3-pip \
+          vulkan*:arm64 \
+          libepoxy-dev:arm64 \
+          python3-setuptools \
+          libepoxy-dev:arm64 \
+          gcc-aarch64-linux-gnu \
+          g++-aarch64-linux-gnu
+        pip3 install mako
+
+    - name: Create build directory
+      run: mkdir build
+
+    - name: Configure for cross-compilation
+      run: |
+        meson setup build \
+          --cross-file <(cat <<EOF
+        [host_machine]
+        system = 'linux'
+        cpu_family = 'aarch64'
+        cpu = 'aarch64'
+        endian = 'little'
+
+        [binaries]
+        c = '/usr/bin/aarch64-linux-gnu-gcc'
+        cpp = '/usr/bin/aarch64-linux-gnu-g++'
+        pkgconfig = '/usr/bin/pkg-config'
+        EOF
+        ) \
+          -Dvenus-experimental=true \
+          -Dplatforms=egl
+
+    - name: Build Virglrenderer
+      run: ninja -C build
+
+    - name: Create Debian package structure
+      run: |
+        mkdir -p debian/DEBIAN
+        mkdir -p debian/usr/local/bin
+        mkdir -p debian/usr/local/lib
+        mkdir -p debian/usr/local/include
+
+        # Control file
+        cat <<EOF > debian/DEBIAN/control
+        Package: virglrenderer
+        Version: 0.1
+        Architecture: arm64
+        Maintainer: Your Name <you@example.com>
+        Description: Virglrenderer with EGL and Venus support
+        EOF
+
+        # Copy build artifacts
+        cp build/src/*.so debian/usr/local/lib/
+        cp build/src/*.a debian/usr/local/lib/
+        cp -r include/ debian/usr/local/include/
+
+    - name: Build .deb package
+      run: dpkg-deb --build debian virglrenderer-aarch64.deb
+
+    - name: Upload .deb package
+      uses: actions/upload-artifact@v3
+      with:
+        name: virglrenderer-aarch64.deb
+        path: virglrenderer-aarch64.deb
