@@ -36,7 +36,7 @@ jobs:
       run: |
         meson setup build \
           -Dvenus-experimental=true \
-          -Degl=true
+          -Dplatforms=egl
 
     - name: Build Virglrenderer
       run: ninja -C build
